@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "141743295046",
+    "firebase_url": "https://reminderalpha.firebaseio.com",
+    "project_id": "reminderalpha",
+    "storage_bucket": "reminderalpha.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141743295046:android:606824841ffe28a6",
+        "android_client_info": {
+          "package_name": "com.josepgrs.reminderalpha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "141743295046-q77k950vtq9n1gcr4o9rlklg25sn20a7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXXjTrDBMTvyDFmAhYYJUJXsmJwmvJW6k"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
