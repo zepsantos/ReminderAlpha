@@ -108,7 +108,7 @@ public class ReminderMain extends AppCompatActivity
         if (id == R.id.news) {
             // Handle the camera action
         } else if (id == R.id.calendar) {
-           
+
 
         } else if (id == R.id.nav_slideshow) {
 
