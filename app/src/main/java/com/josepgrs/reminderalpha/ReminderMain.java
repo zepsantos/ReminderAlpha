@@ -1,6 +1,5 @@
 package com.josepgrs.reminderalpha;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,14 +17,21 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+
 public class ReminderMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "ReminderMain";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_remindermain);
+        init();
 
+
+    }
+
+    private void init() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -53,10 +59,9 @@ public class ReminderMain extends AppCompatActivity
             String email = user.getEmail();
             TextView txtView = (TextView) v.findViewById(R.id.textView);
             txtView.setText(email);
+
         }
-
     }
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -83,6 +88,8 @@ public class ReminderMain extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent i = new Intent(ReminderMain.this, Settings.class);
+            startActivity(i);
             return true;
         }
         if (id == R.id.action_logout) {
@@ -100,8 +107,6 @@ public class ReminderMain extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        Fragment fragment = null;
-        Class fragmentClass;
 
         int id = item.getItemId();
 
@@ -119,7 +124,6 @@ public class ReminderMain extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         }
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

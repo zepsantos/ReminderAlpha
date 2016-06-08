@@ -14,21 +14,24 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class CreateAccount extends MainActivity {
 
     private static final String TAG = "CreateAccount";
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+
     private EditText newemailText;
     private EditText newpassText;
     private Button createAccbtn;
-
+    private DatabaseReference mDatabase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_createaccount);
-
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         createAccbtn = (Button) findViewById(R.id.createAcc);
         newemailText = (EditText) findViewById(R.id.emailNewAcc);
@@ -45,6 +48,7 @@ public class CreateAccount extends MainActivity {
 
     private void createAccount(String email, String password) {
         mAuth = FirebaseAuth.getInstance();
+
         Log.d(TAG, "createAccount:" + email);
         if (!validateForm()) {
             return;
@@ -57,8 +61,9 @@ public class CreateAccount extends MainActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
                 if (task.isSuccessful()) {
-                    Intent i = new Intent(CreateAccount.this, MainActivity.class);
-                    startActivity(i);
+                    onAuthSuccess(task.getResult().getUser());
+
+
                 }
                 // If sign in fails, display a message to the user. If sign in succeeds
                 // the auth state listener will be notified and logic to handle the
@@ -77,6 +82,26 @@ public class CreateAccount extends MainActivity {
 
 
     }
+
+    private void onAuthSuccess(FirebaseUser user) {
+
+
+        // Write new user
+        writeNewUser(user.getUid(), user.getEmail());
+
+        // Go to MainActivity
+        Intent i = new Intent(CreateAccount.this, MainActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    private void writeNewUser(String userId, String email) {
+        User user = new User(email);
+
+
+        mDatabase.child("users").child(userId).setValue(user);
+    }
+
 
     private boolean validateForm() {
         boolean valid = true;

@@ -23,6 +23,7 @@
             android:label="@string/title_activity_reminder_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".NewEvent"></activity>
+        <activity android:name=".Settings" />
     </application>
 
 </manifest>

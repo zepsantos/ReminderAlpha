@@ -17,6 +17,7 @@
         android:layout_alignStart="@+id/passNewAcc"
         android:layout_marginTop="42dp"
         android:ems="10"
+        android:hint="Email"
         android:inputType="textEmailAddress" />
 
     <EditText
@@ -27,6 +28,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="53dp"
         android:ems="10"
+        android:hint="Password"
         android:inputType="textPassword" />
 
     <Button
