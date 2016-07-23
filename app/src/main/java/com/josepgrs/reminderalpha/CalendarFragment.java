@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,6 +35,8 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
     ReminderMain reminderMain;
     MaterialCalendarView widget;
     List<CalendarDay> calendarDays = new ArrayList<>();
+    ListView listView;
+    List<String> EventDays = new ArrayList<>();
     private DatabaseReference mDatgroupchild;
     private DatabaseReference mDatabase;
     private int year;
@@ -71,6 +75,9 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
 
                     int y = Integer.parseInt(data);
+                    EventDays.add(String.valueOf(y));
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.listviewgrid, R.id.listText, EventDays);
+                    listView.setAdapter(adapter);
                     Log.d("Events::", String.valueOf(y));
 
                     calendarDays.add(CalendarDay.from(year, month, y));
@@ -135,6 +142,9 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         widget = (MaterialCalendarView) getActivity().findViewById(R.id.mCalendar);
+        listView = (ListView) getActivity().findViewById(R.id.eventsList);
+
+
         widget.setOnMonthChangedListener(this);
         widget.setOnDateChangedListener(this);
         widget.addDecorator(oneDayDecorator);
