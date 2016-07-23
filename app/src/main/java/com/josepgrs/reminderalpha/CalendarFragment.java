@@ -76,8 +76,7 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
                     int y = Integer.parseInt(data);
                     EventDays.add(String.valueOf(y));
-                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.listviewgrid, R.id.listText, EventDays);
-                    listView.setAdapter(adapter);
+                    ListViewPopulate(EventDays);
                     Log.d("Events::", String.valueOf(y));
 
                     calendarDays.add(CalendarDay.from(year, month, y));
@@ -106,18 +105,22 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
 
         year = date.getYear();
         month = date.getMonth();
+        EventDays.clear();
+
         if ( oldmonth == month ) {
 
         } else {
             groupChild(month, year);
         }
-        //  Log.d("CALENDARFRAGM", String.valueOf(month));
+
 
     }
     @Override
     public void onDateSelected(@NonNull MaterialCalendarView widget, @Nullable CalendarDay date, boolean selected) {
         if ( calendarDays.contains(date) ) {
-            Log.d("DIA+EVENTO", "DEUUUUUUUUU CRL");
+            EventDays.clear();
+            ListViewPopulate(EventDays);
+
     }
 
     }
@@ -128,6 +131,11 @@ public class CalendarFragment extends Fragment implements OnDateSelectedListener
             return "No Selection";
         }
         return FORMATTER.format(date.getDate());
+    }
+
+    private void ListViewPopulate(List<String> lvp) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), R.layout.listviewgrid, R.id.listText, lvp);
+        listView.setAdapter(adapter);
     }
 
     @Override
