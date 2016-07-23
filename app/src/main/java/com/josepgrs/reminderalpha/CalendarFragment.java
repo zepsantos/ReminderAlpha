@@ -1,108 +1,142 @@
 package com.josepgrs.reminderalpha;
 
-import android.content.Context;
-import android.net.Uri;
+
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+import com.prolificinteractive.materialcalendarview.OnMonthChangedListener;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link CalendarFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link CalendarFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class CalendarFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
-
+public class CalendarFragment extends Fragment implements OnDateSelectedListener, OnMonthChangedListener {
+    private static final DateFormat FORMATTER = SimpleDateFormat.getDateInstance();
+    private final OneDayDecorator oneDayDecorator = new OneDayDecorator();
+    ReminderMain reminderMain;
+    MaterialCalendarView widget;
+    List<CalendarDay> calendarDays = new ArrayList<>();
+    private DatabaseReference mDatgroupchild;
+    private DatabaseReference mDatabase;
+    private int year;
+    private int month;
     public CalendarFragment() {
-        // Required empty public constructor
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        CalendarDay calendarDay = new CalendarDay();
+
+
+        year = calendarDay.getYear();
+        month = calendarDay.getMonth();
+        groupChild(month, year);
+       /* Log.d("Current Date:", String.valueOf(year) + String.valueOf(month)); */
+        Log.d("CALENDAR FRAGMENT GROUP", ReminderMain.group);
+
+
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CalendarFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CalendarFragment newInstance(String param1, String param2) {
-        CalendarFragment fragment = new CalendarFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    private void groupChild(final int month, final int year) {
+
+
+        //Log.d("CalendarFragment", reminderMain.group);
+
+        mDatgroupchild = mDatabase.child("groups").child(ReminderMain.group).child("Events").child(String.valueOf(year)).child(String.valueOf(month + 1));
+        mDatgroupchild.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<String> lst = new ArrayList<>(); // Result will be holded Here
+
+                for (DataSnapshot dsp : dataSnapshot.getChildren()) {
+                    lst.add(String.valueOf(dsp.getKey())); //add result into array list
+
+                }
+                for (String data : lst) {
+
+
+                    int y = Integer.parseInt(data);
+                    Log.d("Events::", String.valueOf(y));
+
+                    calendarDays.add(CalendarDay.from(year, month, y));
+                        /* Log.d("MES", String.valueOf(month+1));
+                         Log.d("DATAS", calendarDays.toString()); */
+
+
+                }
+
+                widget.addDecorator(new EventDecorator(Color.RED, calendarDays));
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onMonthChanged(MaterialCalendarView widget, CalendarDay date) {
+        int oldmonth = month;
+
+        year = date.getYear();
+        month = date.getMonth();
+        if ( oldmonth == month ) {
+
+        } else {
+            groupChild(month, year);
         }
+        //  Log.d("CALENDARFRAGM", String.valueOf(month));
+
+    }
+    @Override
+    public void onDateSelected(@NonNull MaterialCalendarView widget, @Nullable CalendarDay date, boolean selected) {
+        if ( calendarDays.contains(date) ) {
+            Log.d("DIA+EVENTO", "DEUUUUUUUUU CRL");
+    }
+
+    }
+
+    private String getSelectedDatesString() {
+        CalendarDay date = widget.getSelectedDate();
+        if ( date == null ) {
+            return "No Selection";
+        }
+        return FORMATTER.format(date.getDate());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+
         return inflater.inflate(R.layout.fragment_calendar, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        widget = (MaterialCalendarView) getActivity().findViewById(R.id.mCalendar);
+        widget.setOnMonthChangedListener(this);
+        widget.setOnDateChangedListener(this);
+        widget.addDecorator(oneDayDecorator);
     }
 }

@@ -1,16 +1,16 @@
 package com.josepgrs.reminderalpha;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,19 +18,51 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 public class ReminderMain extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
     private static final String TAG = "ReminderMain";
+    public static String group;
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_remindermain);
+        mAuth = FirebaseAuth.getInstance();
         init();
+        getgroup();
 
 
+    }
+
+    public void getgroup() {
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        DatabaseReference mDatabasechild = mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).child("group");
+
+
+        mDatabasechild.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                group = dataSnapshot.getValue(String.class);
+                Log.d(TAG, group);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void init() {
@@ -38,6 +70,7 @@ public class ReminderMain extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        assert fab != null;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,6 +78,10 @@ public class ReminderMain extends AppCompatActivity
                 startActivity(i);
             }
         });
+        MainFragment fragment = new MainFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.content_frame, fragment);
+        fragmentTransaction.commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -98,7 +135,7 @@ public class ReminderMain extends AppCompatActivity
             FirebaseAuth.getInstance().signOut();
             Intent i = new Intent(ReminderMain.this, MainActivity.class);
             startActivity(i);
-
+            finish();
             return true;
         }
 
@@ -116,7 +153,10 @@ public class ReminderMain extends AppCompatActivity
         if (id == R.id.news) {
 
         } else if (id == R.id.calendar) {
-
+            CalendarFragment fragment = new CalendarFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, fragment);
+            fragmentTransaction.commit();
 
         } else if (id == R.id.nav_slideshow) {
 

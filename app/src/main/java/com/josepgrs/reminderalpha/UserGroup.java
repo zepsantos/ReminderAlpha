@@ -5,21 +5,20 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 // [START blog_user_class]
 @IgnoreExtraProperties
-public class User {
+public class UserGroup {
 
 
-    public String email;
+    public String group;
 
-    public User() {
+    public UserGroup() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String email) {
+    public UserGroup(String group) {
 
-        this.email = email;
 
+        this.group = group;
     }
 
 }
 // [END blog_user_class]
-

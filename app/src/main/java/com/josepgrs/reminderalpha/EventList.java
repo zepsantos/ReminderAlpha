@@ -1,23 +1,23 @@
 package com.josepgrs.reminderalpha;
 
-
 import com.google.firebase.database.IgnoreExtraProperties;
+
 
 // [START blog_user_class]
 @IgnoreExtraProperties
-public class User {
+public class EventList {
 
 
-    public String email;
+    public String group;
 
-    public User() {
+    public EventList() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String email) {
+    public EventList(String group) {
 
-        this.email = email;
 
+        this.group = group;
     }
 
 }
